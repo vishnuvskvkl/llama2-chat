@@ -1,12 +1,12 @@
 from langchain.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain import PromptTemplate
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
+from langchain.vectorstores import Chroma
 from langchain.llms import CTransformers
 from langchain.chains import RetrievalQA
 import chainlit as cl
 
-DB_FAISS_PATH = 'vectorstore/db_faiss'
+DB_PATH = 'vectorstore/db_chroma'
 
 custom_prompt_template = """Use the following pieces of information to answer the user's question.
 If you don't know the answer, just say that you don't know, don't try to make up an answer.
@@ -51,7 +51,7 @@ def load_llm():
 def qa_bot():
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2",
                                        model_kwargs={'device': 'cpu'})
-    db = FAISS.load_local(DB_FAISS_PATH, embeddings)
+    db = Chroma(DB_PATH, embeddings)
     llm = load_llm()
     qa_prompt = set_custom_prompt()
     qa = retrieval_qa_chain(llm, qa_prompt, db)
@@ -70,7 +70,7 @@ async def start():
     chain = qa_bot()
     msg = cl.Message(content="Starting the bot...")
     await msg.send()
-    msg.content = "Hi, Welcome to Medical Bot. What is your query?"
+    msg.content = "Hi, Welcome to ile_chat. How can i help you?"
     await msg.update()
 
     cl.user_session.set("chain", chain)
