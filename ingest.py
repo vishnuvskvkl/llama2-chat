@@ -20,8 +20,8 @@ def create_vector_db():
     embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2',
                                        model_kwargs={'device': 'cpu'})
 
-    db = Chroma.from_documents(texts, embeddings)
-    db.save_local(DB_PATH)
+    db = Chroma.from_documents(texts, embedding=embeddings,persist_directory=DB_PATH)
+    db.persist()
 
 if __name__ == "__main__":
     create_vector_db()
